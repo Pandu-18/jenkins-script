@@ -1,15 +1,46 @@
-node {
-    stage('Checkout Code') {
-        checkout([$class: 'GitSCM',
-                  branches: [[name: '*/main']],
-                  userRemoteConfigs: [[url: 'https://github.com/Pandu-18/jenkins-script.git']]
-        ])
+pipeline {
+    agent any
+
+    triggers {
+        githubPush()   // 🚀 triggers on GitHub webhook
     }
 
-    stage('Deploy to Tomcat') {
-        echo "Deploying WAR to Tomcat..."
-        sh '''
-            cp hello.war /home/ubuntu/tomcat9/webapps/
-        '''
+    stages {
+        stage('Checkout') {
+            steps {
+                echo "Cloning repo with credentials..."
+                git branch: 'main',
+                    url: 'https://github.com/Pandu-18/jenkins-script.git',
+                    credentialsId: 'github-cred'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                echo "Simulating build..."
+                sh 'ls -l'
+            }
+        }
+
+        stage('Deploy to Tomcat') {
+            steps {
+                echo "Deploying WAR file to Tomcat..."
+                sh '''
+                    cp hello.war /home/ubuntu/tomcat9/webapps/
+                    ls -l /home/ubuntu/tomcat9/webapps/
+                '''
+            }
+        }
+
+        stage('Restart Tomcat') {
+            steps {
+                echo "Restarting Tomcat..."
+                sh '''
+                    /home/ubuntu/tomcat9/bin/shutdown.sh || true
+                    sleep 5
+                    /home/ubuntu/tomcat9/bin/startup.sh
+                '''
+            }
+        }
     }
 }
