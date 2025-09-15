@@ -1,3 +1,1 @@
-hello commit 
-hiii 
-jenkins 
+hello master slave 
