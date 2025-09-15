@@ -1,2 +1,2 @@
-hello master slave 
+hello master slave updated
 hi
